@@ -8,6 +8,8 @@
 #include "render.h"
 #include "route_planner.h"
 
+#define LOG(x) std::cout << x << std::endl;
+
 using namespace std::experimental;
 
 static std::optional<std::vector<std::byte>> ReadFile(const std::string &path)
@@ -53,12 +55,30 @@ int main(int argc, const char **argv)
     // TODO: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
     // user input for these values using std::cin. Pass the user input to the
     // RoutePlanner object below.
-
+    float start_x, start_y, goal_x, goal_y;
+    do {
+        std::cout << "Enter X coordinate of the start: " << std::endl;
+        std::cin >> start_x;
+    }while(start_x < 0.0 || start_x > 100.0);
+    do {
+        std::cout << "Enter Y coordinate of the start: " << std::endl;
+        std::cin >> start_y;
+    }while(start_y < 0.0 || start_y > 100.0);
+    do {
+        std::cout << "Enter X coordinate of the goal: " << std::endl;
+        std::cin >> goal_x;
+    }while(goal_x < 0.0 || goal_x > 100.0);
+    do {
+        std::cout << "Enter Y coordinate of the goal: " << std::endl;
+        std::cin >> goal_y;
+    }while(goal_y < 0.0 || goal_y > 100.0);
     // Build Model.
     RouteModel model{osm_data};
 
     // Perform search and render results.
-    RoutePlanner route_planner{model, 10, 10, 90, 90};
+    RoutePlanner route_planner{model, start_x, start_y, goal_x, goal_y};
+  	route_planner.AStarSearch();
+  	std::cout << "Distance to go: " << route_planner.GetDistance() << " meters." << std::endl;
     Render render{model};
 
     auto display = io2d::output_surface{400, 400, io2d::format::argb32, io2d::scaling::none, io2d::refresh_style::fixed, 30};
